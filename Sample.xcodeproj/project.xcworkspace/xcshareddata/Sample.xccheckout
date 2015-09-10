@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>480A3E84-C247-4300-8168-A7682013AF5F</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Sample</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>EE6163C32C0D0D1386FE17788BC0A793F664E98F</key>
+		<string>https://github.com/quillilac/CavigatorStudy.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Sample.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>EE6163C32C0D0D1386FE17788BC0A793F664E98F</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/quillilac/CavigatorStudy.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>EE6163C32C0D0D1386FE17788BC0A793F664E98F</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>EE6163C32C0D0D1386FE17788BC0A793F664E98F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CavigatorStudy</string>
+		</dict>
+	</array>
+</dict>
+</plist>

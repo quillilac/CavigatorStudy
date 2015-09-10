@@ -12,10 +12,15 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
     
     @IBOutlet weak var progressView: UIProgressView!
     
-    var fileName: String!
+    private var fileName: String!
+    private var downloadPhase: Int!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         
         // ボタン生成
         let downloadButton = UIButton()
@@ -29,6 +34,9 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
         downloadButton.addTarget(self, action: Selector("downloadWithFile"), forControlEvents: .TouchUpInside)
         self.view.addSubview(downloadButton)
         
+        // ダウンロードフェーズの初期化
+        downloadPhase = 0
+
     }
     
     @IBAction func tappedStartSession(sender: AnyObject) {
@@ -36,10 +44,13 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
     }
     
     func downloadWithFile() {
-        var accessUrl: String = "http://54.68.143.213/CaviNet/Lan001/Voice/Loc031.ogg" // アクセス先のURL
+        var accessUrl: String = "http://54.68.143.213/cgi-bin/getTable.cgi?tbl=Language" // アクセス先のURL
         // ファイル名を取り出す
         var pos = (accessUrl as NSString).rangeOfString("/", options:NSStringCompareOptions.BackwardsSearch).location
         fileName = accessUrl.substringFromIndex(advance(accessUrl.startIndex, pos+1))
+        if downloadPhase == 0 { // 言語一覧の取得ならファイル名を置き換える
+            fileName = "languageList.txt"
+        }
         println(fileName)
         
         // NSURLSessionの準備
@@ -82,18 +93,44 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
             // ライブラリのパス
             let libraryPath = NSSearchPathForDirectoriesInDomains(.LibraryDirectory, .UserDomainMask, true)[0] as String
             
-            let languagePath = libraryPath + "/LanguageFiles"
+            // ファイルの保存先
+            var fileSaveDirPath = ""
+            /*switch downloadPhase {
+            case 0:
+                fileSaveDirPath = libraryPath + "/"
+            }*/
+            if (downloadPhase == 0) {
+                fileSaveDirPath = libraryPath + "/LanguageFiles"
+            }
             
             // ディレクトリの生成
-            if (NSFileManager.defaultManager().fileExistsAtPath(languagePath)) {
+            if (NSFileManager.defaultManager().fileExistsAtPath(fileSaveDirPath)) {
                 println("fileExists")
             } else {
-                NSFileManager.defaultManager().createDirectoryAtPath(languagePath, withIntermediateDirectories: true, attributes: nil, error: nil)
-                addSkipBackupAttributeToItemAtURL(NSURL(string: languagePath)!)
+                NSFileManager.defaultManager().createDirectoryAtPath(fileSaveDirPath, withIntermediateDirectories: true, attributes: nil, error: nil)
+                addSkipBackupAttributeToItemAtURL(NSURL(string: fileSaveDirPath)!)
                 println("fineNotExists")
             }
             
-            fileData?.writeToFile("\(languagePath)/\(fileName)", atomically: false) // ファイル書き込み
+            fileData?.writeToFile("\(fileSaveDirPath)/\(fileName)", atomically: false) // ファイル書き込み
+            
+            // Preferenceに保存するテスト
+            let userDefaults = NSUserDefaults.standardUserDefaults()
+            userDefaults.setObject(fileData, forKey: "LanguageList")
+            userDefaults.synchronize()
+            // Preferenceからの読み出し
+            var nsData: NSData = userDefaults.dataForKey("LanguageList")!
+            var str = NSString(data: nsData, encoding:NSUTF8StringEncoding) as String
+            println(str)
+            
+            var lineIndex = 0;
+            str.enumerateLines { line, stop in
+                
+                // ここに1行ずつ行いたい処理を書く
+                println("\(lineIndex) : \(line)")
+                lineIndex += 1
+            }
+
             
             println(location)
         }

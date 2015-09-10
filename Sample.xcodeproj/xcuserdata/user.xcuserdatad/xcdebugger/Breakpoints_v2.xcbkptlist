@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Sample/ViewControllerHttp5.swift"
-            timestampString = "463476038.249275"
+            timestampString = "463562945.984292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "URLSession(_:downloadTask:didFinishDownloadingToURL:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Sample/ViewControllerHttp5.swift"
-            timestampString = "463480446.329721"
+            timestampString = "463566166.443705"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
             landmarkName = "addSkipBackupAttributeToItemAtURL(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,11 +122,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Sample/ViewControllerHttp5.swift"
-            timestampString = "463480768.841371"
+            timestampString = "463566166.443705"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
+            landmarkName = "addSkipBackupAttributeToItemAtURL(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sample/ViewControllerHttp5.swift"
+            timestampString = "463566166.443705"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
             landmarkName = "addSkipBackupAttributeToItemAtURL(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -138,12 +154,44 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Sample/ViewControllerHttp5.swift"
-            timestampString = "463480777.437344"
+            timestampString = "463566166.443705"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
-            landmarkName = "addSkipBackupAttributeToItemAtURL(_:)"
+            startingLineNumber = "124"
+            endingLineNumber = "124"
+            landmarkName = "URLSession(_:downloadTask:didFinishDownloadingToURL:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sample/ViewControllerHttp5.swift"
+            timestampString = "463566125.266723"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
+            landmarkName = "URLSession(_:downloadTask:didFinishDownloadingToURL:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sample/ViewControllerHttp5.swift"
+            timestampString = "463566126.538852"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
+            landmarkName = "URLSession(_:downloadTask:didFinishDownloadingToURL:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
