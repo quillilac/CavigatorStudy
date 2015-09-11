@@ -8,12 +8,16 @@
 
 import UIKit
 
-class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
+class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var progressView: UIProgressView!
     
+    //テーブルビューインスタンス作成
+    var tableView: UITableView  =   UITableView()
+    
     private var fileName: String!
     private var downloadPhase: Int!
+    private var splitStringMatrix: [[String]] = [[String]]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -114,7 +118,7 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
             
             fileData?.writeToFile("\(fileSaveDirPath)/\(fileName)", atomically: false) // ファイル書き込み
             
-            // Preferenceに保存するテスト
+            // Preferenceに保存する
             let userDefaults = NSUserDefaults.standardUserDefaults()
             userDefaults.setObject(fileData, forKey: "LanguageList")
             userDefaults.synchronize()
@@ -122,15 +126,25 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
             var nsData: NSData = userDefaults.dataForKey("LanguageList")!
             var str = NSString(data: nsData, encoding:NSUTF8StringEncoding) as String
             println(str)
-            
-            var lineIndex = 0;
+            // 読みだしたファイルを多次元配列に格納
+            var lineIndex: Int = 0;
             str.enumerateLines { line, stop in
                 
                 // ここに1行ずつ行いたい処理を書く
-                println("\(lineIndex) : \(line)")
+                if (lineIndex >= 3) {
+                    var splitString = split(line, { $0 == "," })
+                    self.splitStringMatrix.append(splitString)
+                }
+                //println("\(lineIndex) : \(line)")
                 lineIndex += 1
             }
-
+            
+            var i: Int;
+            for (i = 0; i < splitStringMatrix.count; i++) {
+                println(splitStringMatrix[i][1])
+            }
+            
+            generateTableView()
             
             println(location)
         }
@@ -154,5 +168,29 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate {
         
         println(success)
         return success;
+    }
+    
+    // テーブルリスト描画に関する処理
+    func generateTableView() {
+        //テーブルビュー初期化、関連付け
+        tableView.frame         =   CGRectMake(0, 150, self.view.bounds.width, self.view.bounds.height - 150);
+        tableView.delegate      =   self
+        tableView.dataSource    =   self
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        self.view.addSubview(tableView)
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.splitStringMatrix.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        var cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("cell") as UITableViewCell
+        cell.textLabel.text = self.splitStringMatrix[indexPath.row][1]
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        println("セルを選択しました！ #\(indexPath.row)!")
     }
 }
