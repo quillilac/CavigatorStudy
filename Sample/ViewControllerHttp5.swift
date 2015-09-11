@@ -49,28 +49,31 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
     
 /********** ファイルダウンロード **********/
     func downloadWithFile() {
-        var accessUrl: String = "http://54.68.143.213/cgi-bin/getTable.cgi?tbl=Language" // アクセス先のURL
-        createDownloadTask(accessUrl)
+        var accessUrlArray: [String] = ["http://54.68.143.213/cgi-bin/getTable.cgi?tbl=Language"] // アクセス先のURL
+        createDownloadTask(accessUrlArray)
     }
     
     // ダウンロードタスクを生成する関数
-    func createDownloadTask(accessUrl: String) {
-        // ファイル名を取り出す
-        var pos = (accessUrl as NSString).rangeOfString("/", options:NSStringCompareOptions.BackwardsSearch).location
-        fileName = accessUrl.substringFromIndex(advance(accessUrl.startIndex, pos+1))
+    func createDownloadTask(accessUrlArray: [String]) {
+        for (var i: Int = 0; i < accessUrlArray.count; i++) {
+            var accessUrl = accessUrlArray[i]
+            // ファイル名を取り出す
+            var pos = (accessUrl as NSString).rangeOfString("/", options:NSStringCompareOptions.BackwardsSearch).location
+            fileName = accessUrl.substringFromIndex(advance(accessUrl.startIndex, pos+1))
+            
+            println(fileName)
+            
+            // NSURLSessionの準備
+            let url = NSURL(string: accessUrl)
+            let config = NSURLSessionConfiguration.defaultSessionConfiguration()
+            let session = NSURLSession(configuration: config,
+                delegate: self,
+                delegateQueue: NSOperationQueue.mainQueue())
         
-        println(fileName)
+            let task = session.downloadTaskWithURL(url!)
         
-        // NSURLSessionの準備
-        let url = NSURL(string: accessUrl)
-        let config = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let session = NSURLSession(configuration: config,
-            delegate: self,
-            delegateQueue: NSOperationQueue.mainQueue())
-        
-        let task = session.downloadTaskWithURL(url!)
-        
-        task.resume()
+            task.resume()
+        }
     }
     
     // 通信の最初に呼ばれる
@@ -85,6 +88,7 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
         //println("write:\(bytesWritten) / \(totalBytesWritten) -> \(totalBytesExpectedToWrite)")
     }
     
+    var testNum = 0
     // 通信終了時に呼ばれる
     func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
         //progressView.progress = 1.0
@@ -101,16 +105,9 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
             // ライブラリのパス
             let libraryPath = NSSearchPathForDirectoriesInDomains(.LibraryDirectory, .UserDomainMask, true)[0] as String
             
-            // ファイルの保存先
-            var fileSaveDirPath = libraryPath + "/LanguageFiles"
-            /*switch downloadPhase {
+            
+            switch downloadPhase {
             case 0:
-                fileSaveDirPath = libraryPath + "/"
-            }*/
-            
-            
-            
-            if (downloadPhase == 0) {
                 // Preferenceに保存する
                 let userDefaults = NSUserDefaults.standardUserDefaults()
                 userDefaults.setObject(fileData, forKey: "LanguageList")
@@ -139,9 +136,32 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
             
                 // リスト形式で言語一覧を表示
                 createTableView()
+                // ファイル一覧のダウンロードタスクを生成する
+                createDownloadTask(["http://54.68.143.213/cgi-bin/getFilepath.cgi?lang=Lan001"])
                 
-                createDownloadTask("http://54.68.143.213/CaviNet/Lan001/Voice/Loc007.ogg")
-            } else if (downloadPhase == 1) {
+            case 1:
+                var cachesDirPath = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)[0] as String
+                fileName = "fileUrl.txt"
+                fileData?.writeToFile("\(cachesDirPath)/\(fileName)", atomically: false) // ファイル書き込み
+                
+                let str = NSString(data:fileData!, encoding:NSUTF8StringEncoding) as String
+                println(str)
+                
+                var accessUrlArray: [String] = [String]()
+                var lineIndex: Int = 0
+                str.enumerateLines { line, stop in
+                    // ここに1行ずつ行いたい処理を書く
+                    if (lineIndex >= 4) {
+                        accessUrlArray.append(line)
+                    }
+                    lineIndex += 1
+                }
+                
+                createDownloadTask(accessUrlArray)
+                
+            case 2:
+                // ファイルの保存先
+                var fileSaveDirPath = libraryPath + "/LanguageFiles"
                 // ディレクトリの生成
                 if (NSFileManager.defaultManager().fileExistsAtPath(fileSaveDirPath)) {
                     println("fileExists")
@@ -150,11 +170,17 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
                     addSkipBackupAttributeToItemAtURL(NSURL(string: fileSaveDirPath)!)
                     println("fineNotExists")
                 }
+                var destinationFilename = downloadTask.originalRequest.URL.lastPathComponent
+                println(fileName)
+                fileData?.writeToFile("\(fileSaveDirPath)/\(destinationFilename)", atomically: false) // ファイル書き込み
+                testNum++
                 
-                fileData?.writeToFile("\(fileSaveDirPath)/\(fileName)", atomically: false) // ファイル書き込み
+            default:
+                break
             }
-            
-            downloadPhase! += 1 // downloadPhaseを次に進める
+            if (downloadPhase < 2) {
+                downloadPhase! += 1 // downloadPhaseを次に進める
+            }
             
             //println(location)
         }
