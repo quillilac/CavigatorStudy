@@ -12,12 +12,11 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
     
     @IBOutlet weak var progressView: UIProgressView!
     
-    //テーブルビューインスタンス作成
-    var tableView: UITableView  =   UITableView()
-    
+    private var tableView: UITableView  =   UITableView()
     private var fileName: String!
     private var downloadPhase: Int!
     private var splitStringMatrix: [[String]] = [[String]]()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,18 +42,23 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
 
     }
     
+    // ボタンクリック時に呼ばれる
     @IBAction func tappedStartSession(sender: AnyObject) {
         self.downloadWithFile()
     }
     
+/********** ファイルダウンロード **********/
     func downloadWithFile() {
         var accessUrl: String = "http://54.68.143.213/cgi-bin/getTable.cgi?tbl=Language" // アクセス先のURL
+        createDownloadTask(accessUrl)
+    }
+    
+    // ダウンロードタスクを生成する関数
+    func createDownloadTask(accessUrl: String) {
         // ファイル名を取り出す
         var pos = (accessUrl as NSString).rangeOfString("/", options:NSStringCompareOptions.BackwardsSearch).location
         fileName = accessUrl.substringFromIndex(advance(accessUrl.startIndex, pos+1))
-        if downloadPhase == 0 { // 言語一覧の取得ならファイル名を置き換える
-            fileName = "languageList.txt"
-        }
+        
         println(fileName)
         
         // NSURLSessionの準備
@@ -98,55 +102,61 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
             let libraryPath = NSSearchPathForDirectoriesInDomains(.LibraryDirectory, .UserDomainMask, true)[0] as String
             
             // ファイルの保存先
-            var fileSaveDirPath = ""
+            var fileSaveDirPath = libraryPath + "/LanguageFiles"
             /*switch downloadPhase {
             case 0:
                 fileSaveDirPath = libraryPath + "/"
             }*/
+            
+            
+            
             if (downloadPhase == 0) {
-                fileSaveDirPath = libraryPath + "/LanguageFiles"
-            }
-            
-            // ディレクトリの生成
-            if (NSFileManager.defaultManager().fileExistsAtPath(fileSaveDirPath)) {
-                println("fileExists")
-            } else {
-                NSFileManager.defaultManager().createDirectoryAtPath(fileSaveDirPath, withIntermediateDirectories: true, attributes: nil, error: nil)
-                addSkipBackupAttributeToItemAtURL(NSURL(string: fileSaveDirPath)!)
-                println("fineNotExists")
-            }
-            
-            fileData?.writeToFile("\(fileSaveDirPath)/\(fileName)", atomically: false) // ファイル書き込み
-            
-            // Preferenceに保存する
-            let userDefaults = NSUserDefaults.standardUserDefaults()
-            userDefaults.setObject(fileData, forKey: "LanguageList")
-            userDefaults.synchronize()
-            // Preferenceからの読み出し
-            var nsData: NSData = userDefaults.dataForKey("LanguageList")!
-            var str = NSString(data: nsData, encoding:NSUTF8StringEncoding) as String
-            println(str)
-            // 読みだしたファイルを多次元配列に格納
-            var lineIndex: Int = 0;
-            str.enumerateLines { line, stop in
+                // Preferenceに保存する
+                let userDefaults = NSUserDefaults.standardUserDefaults()
+                userDefaults.setObject(fileData, forKey: "LanguageList")
+                userDefaults.synchronize()
+                // Preferenceからの読み出し
+                var nsData: NSData = userDefaults.dataForKey("LanguageList")!
+                var str = NSString(data: nsData, encoding:NSUTF8StringEncoding) as String
+                println(str)
+                // 読みだしたファイルを多次元配列に格納
+                var lineIndex: Int = 0;
+                str.enumerateLines { line, stop in
                 
-                // ここに1行ずつ行いたい処理を書く
-                if (lineIndex >= 3) {
-                    var splitString = split(line, { $0 == "," })
-                    self.splitStringMatrix.append(splitString)
+                    // ここに1行ずつ行いたい処理を書く
+                    if (lineIndex >= 3) {
+                        var splitString = split(line, { $0 == "," })
+                        self.splitStringMatrix.append(splitString)
+                    }
+                    //println("\(lineIndex) : \(line)")
+                    lineIndex += 1
                 }
-                //println("\(lineIndex) : \(line)")
-                lineIndex += 1
+            
+                var i: Int;
+                for (i = 0; i < splitStringMatrix.count; i++) {
+                    println(splitStringMatrix[i][1])
+                }
+            
+                // リスト形式で言語一覧を表示
+                createTableView()
+                
+                createDownloadTask("http://54.68.143.213/CaviNet/Lan001/Voice/Loc007.ogg")
+            } else if (downloadPhase == 1) {
+                // ディレクトリの生成
+                if (NSFileManager.defaultManager().fileExistsAtPath(fileSaveDirPath)) {
+                    println("fileExists")
+                } else {
+                    NSFileManager.defaultManager().createDirectoryAtPath(fileSaveDirPath, withIntermediateDirectories: true, attributes: nil, error: nil)
+                    addSkipBackupAttributeToItemAtURL(NSURL(string: fileSaveDirPath)!)
+                    println("fineNotExists")
+                }
+                
+                fileData?.writeToFile("\(fileSaveDirPath)/\(fileName)", atomically: false) // ファイル書き込み
             }
             
-            var i: Int;
-            for (i = 0; i < splitStringMatrix.count; i++) {
-                println(splitStringMatrix[i][1])
-            }
+            downloadPhase! += 1 // downloadPhaseを次に進める
             
-            generateTableView()
-            
-            println(location)
+            //println(location)
         }
         
         session.invalidateAndCancel()
@@ -170,8 +180,8 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
         return success;
     }
     
-    // テーブルリスト描画に関する処理
-    func generateTableView() {
+/********** テーブルリストに関する処理 **********/
+    func createTableView() {
         //テーブルビュー初期化、関連付け
         tableView.frame         =   CGRectMake(0, 150, self.view.bounds.width, self.view.bounds.height - 150);
         tableView.delegate      =   self
