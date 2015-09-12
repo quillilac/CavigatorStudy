@@ -13,9 +13,9 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
     @IBOutlet weak var progressView: UIProgressView!
     
     private var tableView: UITableView  =   UITableView()
-    private var fileName: String!
     private var downloadPhase: Int!
     private var splitStringMatrix: [[String]] = [[String]]()
+    private var selectedLanguageId: Int!
     
     
     override func viewDidLoad() {
@@ -26,7 +26,7 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
         super.viewWillAppear(animated)
         
         // ボタン生成
-        let downloadButton = UIButton()
+        /*let downloadButton = UIButton()
         downloadButton.setTitle("Download", forState: .Normal)
         downloadButton.setTitleColor(UIColor.whiteColor(), forState:.Normal)
         downloadButton.frame = CGRectMake(0, 0, 100, 50)
@@ -35,17 +35,18 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
         downloadButton.setTitle("Download", forState: .Highlighted)
         downloadButton.setTitleColor(UIColor(red: 0.5, green: 0.1, blue: 0.5, alpha: 0.7), forState: .Highlighted)
         downloadButton.addTarget(self, action: Selector("downloadWithFile"), forControlEvents: .TouchUpInside)
-        self.view.addSubview(downloadButton)
+        self.view.addSubview(downloadButton)*/
         
         // ダウンロードフェーズの初期化
         downloadPhase = 0
+        self.downloadWithFile()
 
     }
     
     // ボタンクリック時に呼ばれる
-    @IBAction func tappedStartSession(sender: AnyObject) {
+    /*@IBAction func tappedStartSession(sender: AnyObject) {
         self.downloadWithFile()
-    }
+    }*/
     
 /********** ファイルダウンロード **********/
     func downloadWithFile() {
@@ -57,11 +58,6 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
     func createDownloadTask(accessUrlArray: [String]) {
         for (var i: Int = 0; i < accessUrlArray.count; i++) {
             var accessUrl = accessUrlArray[i]
-            // ファイル名を取り出す
-            var pos = (accessUrl as NSString).rangeOfString("/", options:NSStringCompareOptions.BackwardsSearch).location
-            fileName = accessUrl.substringFromIndex(advance(accessUrl.startIndex, pos+1))
-            
-            println(fileName)
             
             // NSURLSessionの準備
             let url = NSURL(string: accessUrl)
@@ -73,6 +69,7 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
             let task = session.downloadTaskWithURL(url!)
         
             task.resume()
+            
         }
     }
     
@@ -137,11 +134,11 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
                 // リスト形式で言語一覧を表示
                 createTableView()
                 // ファイル一覧のダウンロードタスクを生成する
-                createDownloadTask(["http://54.68.143.213/cgi-bin/getFilepath.cgi?lang=Lan001"])
+                //createDownloadTask(["http://54.68.143.213/cgi-bin/getFilepath.cgi?lang=Lan001"])
                 
             case 1:
                 var cachesDirPath = NSSearchPathForDirectoriesInDomains(.CachesDirectory, .UserDomainMask, true)[0] as String
-                fileName = "fileUrl.txt"
+                var fileName = "fileUrl.txt"
                 fileData?.writeToFile("\(cachesDirPath)/\(fileName)", atomically: false) // ファイル書き込み
                 
                 let str = NSString(data:fileData!, encoding:NSUTF8StringEncoding) as String
@@ -157,11 +154,20 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
                     lineIndex += 1
                 }
                 
+                downloadPhase! += 1
                 createDownloadTask(accessUrlArray)
                 
             case 2:
-                // ファイルの保存先
-                var fileSaveDirPath = libraryPath + "/LanguageFiles"
+                var destinationFilename = downloadTask.originalRequest.URL.lastPathComponent
+                // 拡張子を見てファイルの保存先を決める
+                var fileSaveDirPath: String = "";
+                var pos = (destinationFilename as NSString).rangeOfString(".", options:NSStringCompareOptions.BackwardsSearch).location
+                if (destinationFilename.substringFromIndex(advance(destinationFilename.startIndex, pos+1)) == "jpg") {
+                    fileSaveDirPath = libraryPath + "/ImageFiles"
+                } else {
+                    fileSaveDirPath = libraryPath + "/LanguageFiles/" + self.splitStringMatrix[selectedLanguageId][0]
+                }
+                //var fileSaveDirPath = libraryPath + "/LanguageFiles"
                 // ディレクトリの生成
                 if (NSFileManager.defaultManager().fileExistsAtPath(fileSaveDirPath)) {
                     println("fileExists")
@@ -170,16 +176,17 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
                     addSkipBackupAttributeToItemAtURL(NSURL(string: fileSaveDirPath)!)
                     println("fineNotExists")
                 }
-                var destinationFilename = downloadTask.originalRequest.URL.lastPathComponent
-                println(fileName)
+                
+                if (destinationFilename == "getLocation.cgi") {
+                    destinationFilename = "location.txt"
+                } else if (destinationFilename == "getPage.cgi") {
+                    destinationFilename = "page.txt"
+                }
                 fileData?.writeToFile("\(fileSaveDirPath)/\(destinationFilename)", atomically: false) // ファイル書き込み
                 testNum++
                 
             default:
                 break
-            }
-            if (downloadPhase < 2) {
-                downloadPhase! += 1 // downloadPhaseを次に進める
             }
             
             //println(location)
@@ -209,7 +216,7 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
 /********** テーブルリストに関する処理 **********/
     func createTableView() {
         //テーブルビュー初期化、関連付け
-        tableView.frame         =   CGRectMake(0, 150, self.view.bounds.width, self.view.bounds.height - 150);
+        tableView.frame         =   CGRectMake(0, 70, self.view.bounds.width, self.view.bounds.height - 70);
         tableView.delegate      =   self
         tableView.dataSource    =   self
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -227,6 +234,12 @@ class ViewControllerHttp5: UIViewController, NSURLSessionDownloadDelegate, UITab
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        println("セルを選択しました！ #\(indexPath.row)!")
+        println("セルを選択しました！ #\(indexPath.row)! " + self.splitStringMatrix[indexPath.row][0])
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        userDefaults.setObject(self.splitStringMatrix[indexPath.row][0], forKey: "CurrentLanguage")
+        userDefaults.synchronize()
+        downloadPhase = 1
+        selectedLanguageId = indexPath.row
+        createDownloadTask(["http://54.68.143.213/cgi-bin/getFilepath.cgi?lang="+self.splitStringMatrix[selectedLanguageId][0]])
     }
 }

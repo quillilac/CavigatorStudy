@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		CEBE3EF81B9FF21E004E7CF1 /* ViewControllerHttp5.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE3EF71B9FF21E004E7CF1 /* ViewControllerHttp5.swift */; };
-		CEDE8D291BA125AA00E58952 /* ViewControllerHttp6.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDE8D281BA125AA00E58952 /* ViewControllerHttp6.swift */; };
 		CEF7E5CE1B9D66F900AC2529 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF7E5CD1B9D66F900AC2529 /* AppDelegate.swift */; };
 		CEF7E5D01B9D66F900AC2529 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF7E5CF1B9D66F900AC2529 /* ViewController.swift */; };
 		CEF7E5D31B9D66F900AC2529 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEF7E5D11B9D66F900AC2529 /* Main.storyboard */; };
@@ -30,7 +29,6 @@
 
 /* Begin PBXFileReference section */
 		CEBE3EF71B9FF21E004E7CF1 /* ViewControllerHttp5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerHttp5.swift; sourceTree = "<group>"; };
-		CEDE8D281BA125AA00E58952 /* ViewControllerHttp6.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerHttp6.swift; sourceTree = "<group>"; };
 		CEF7E5C81B9D66F900AC2529 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEF7E5CC1B9D66F900AC2529 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEF7E5CD1B9D66F900AC2529 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -91,7 +89,6 @@
 				CEF7E5D61B9D66F900AC2529 /* LaunchScreen.xib */,
 				CEF7E5CB1B9D66F900AC2529 /* Supporting Files */,
 				CEBE3EF71B9FF21E004E7CF1 /* ViewControllerHttp5.swift */,
-				CEDE8D281BA125AA00E58952 /* ViewControllerHttp6.swift */,
 			);
 			path = Sample;
 			sourceTree = "<group>";
@@ -224,7 +221,6 @@
 				CEBE3EF81B9FF21E004E7CF1 /* ViewControllerHttp5.swift in Sources */,
 				CEF7E5D01B9D66F900AC2529 /* ViewController.swift in Sources */,
 				CEF7E5EE1B9D695300AC2529 /* ViewControllerA.swift in Sources */,
-				CEDE8D291BA125AA00E58952 /* ViewControllerHttp6.swift in Sources */,
 				CEF7E5CE1B9D66F900AC2529 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
